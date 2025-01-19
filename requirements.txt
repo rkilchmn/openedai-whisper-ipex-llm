@@ -3,7 +3,11 @@ uvicorn
 pydantic
 python-multipart
 transformers
+# for ipex-llm
+# use 'xpu' for gen12-14 iGPU/dGPU or 'xpu_lnl' for Intel Core™ Ultra Processors (Series 2) with processor number 2xxV (code name Lunar Lake)
+# https://github.com/intel-analytics/ipex-llm/blob/main/docs/mddocs/Quickstart/install_windows_gpu.md#install-ipex-llm
+--extra-index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/
+ipex-llm[xpu]
 torch
-openvino
-optimum-intel
-nncf # for 4bit and 8bit quantization
+intel-extension-for-pytorch
+# nncf # for 4bit and 8bit quantization

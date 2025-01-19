@@ -55,7 +55,16 @@ API Documentation
 Installation instructions
 -------------------------
 
-Openvino runtime (for Python API only) is installed automatically by pip. Further information can be found here: [ install OpenVino](https://docs.openvino.ai/2024/get-started/install-openvino.html)
+Create a new conda enironment
+```shell
+conda create -n llm python=3.11 libuv
+conda activate llm
+```
+or in VS Code creata conda environment and add:
+```shell
+conda install libuv
+```
+
 
 ```shell
 # Install the Python requirements

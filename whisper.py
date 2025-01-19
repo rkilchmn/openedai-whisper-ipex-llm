@@ -3,16 +3,17 @@ import os
 import sys
 import argparse
 
-import torch
 from transformers import pipeline
 from typing import Optional, List
 from fastapi import UploadFile, Form
 from fastapi.responses import PlainTextResponse, JSONResponse
 import uvicorn
 
-# for openvino implementation
-import openvino as ov
-from optimum.intel.openvino import OVModelForSpeechSeq2Seq
+# for ipex-llm implementation
+from transformers import pipeline
+from ipex_llm.transformers import AutoModelForSpeechSeq2Seq
+from ipex_llm import optimize_model
+from transformers.models.whisper import WhisperFeatureExtractor, WhisperTokenizer
 from transformers import WhisperProcessor, WhisperForConditionalGeneration, GenerationConfig
 from pathlib import Path
 
@@ -143,7 +144,7 @@ def parse_args(argv=None):
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('-m', '--model', action='store', default="distil-whisper/distil-small.en", help="The model to use for transcription. Ex. distil-whisper/distil-medium.en")
-    parser.add_argument('-d', '--device', action='store', default="AUTO", help="Set the OpenVino device for the model. Ex. CPU or GPU (default: AUTO)")
+    parser.add_argument('-d', '--device', action='store', default="xpu", help="Set the device for the model. Ex. 'xpu' for GPU or 'cpu' (default: 'xpu')")
     parser.add_argument('-t', '--dtype', action='store', default="auto", help="Set the torch data type for processing (float32, float16, bfloat16)")
     parser.add_argument('-q', '--quantization', action='store', default="", help=f"Enable model qunatization Ex. {QUANTIZATION_4BIT} or  {QUANTIZATION_8BIT} (default is off)")
     parser.add_argument('-P', '--port', action='store', default=8000, type=int, help="Server tcp port")
@@ -155,13 +156,6 @@ def parse_args(argv=None):
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
 
-    core = ov.Core()
-    devices=str(core.available_devices)
-
-    if args.device not in devices:
-        print(f"Openvino device {args.device} not available. Avaiable devices: {devices}")
-        exit(1)
-
     # enable qantization
     is_8bit = False
     is_4bit = False
@@ -170,39 +164,22 @@ if __name__ == "__main__":
     elif args.quantization == QUANTIZATION_8BIT:
         is_8bit = True
 
-    # use openvino models
-    model = WhisperForConditionalGeneration.from_pretrained(args.model)
-    processor = WhisperProcessor.from_pretrained(args.model)
-    generation_config = GenerationConfig.from_pretrained(args.model)
+    # use ipex-llm model
+    model = AutoModelForSpeechSeq2Seq.from_pretrained(args.model, load_in_8bit=is_8bit, load_in_4bit=is_4bit)
+    model.config.forced_decoder_ids = None
 
-    model_path_str = args.model.replace('/', '_')
-    if args.quantization:
-        model_path_str += '_' + args.quantization
-    model_path = Path(model_path_str)
-    
-    ov_config = {"CACHE_DIR": ""}
-    if not model_path.exists():
-        ov_model = OVModelForSpeechSeq2Seq.from_pretrained(
-            args.model, ov_config=ov_config, export=True, compile=False, load_in_8bit=is_8bit, load_in_4bit=is_4bit
-        )
-        ov_model.half()
-        ov_model.save_pretrained(model_path)
-    else:
-        ov_model = OVModelForSpeechSeq2Seq.from_pretrained(
-            model_path, ov_config=ov_config, compile=False
-        )
-
-    ov_model.generation_config = generation_config
-    ov_model.to(args.device)
-    ov_model.compile()
+    # With only one line to enable IPEX-LLM optimize on a pytorch model
+    model = optimize_model(model)
+    model = model.to(args.device)
 
     # Configure pipeline
     pipe = pipeline(
-        "automatic-speech-recognition",
-        model=ov_model,
-        tokenizer=processor.tokenizer,
-        feature_extractor=processor.feature_extractor,
-        chunk_length_s=30
+      "automatic-speech-recognition",
+      model=model,
+      feature_extractor= WhisperFeatureExtractor.from_pretrained(args.model),
+      tokenizer= WhisperTokenizer.from_pretrained(args.model),
+      chunk_length_s=30,
+      device=args.device
     )
 
     if args.preload:
