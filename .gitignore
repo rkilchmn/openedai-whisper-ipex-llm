@@ -2,6 +2,10 @@
 whisper.env
 hf_home/
 
+# temp openvino model dirs
+distil*/
+openai*/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

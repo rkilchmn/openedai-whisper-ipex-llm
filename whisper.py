@@ -10,6 +10,12 @@ from fastapi import UploadFile, Form
 from fastapi.responses import PlainTextResponse, JSONResponse
 import uvicorn
 
+# for openvino implementation
+import openvino as ov
+from optimum.intel.openvino import OVModelForSpeechSeq2Seq
+from transformers import WhisperProcessor, WhisperForConditionalGeneration, GenerationConfig
+from pathlib import Path
+
 import openedai
 
 pipe = None
@@ -71,6 +77,7 @@ async def whisper(file, response_format: str, **kwargs):
 
 
 @app.post("/v1/audio/transcriptions")
+@app.post("/inference/audio/transcriptions") # alternative path used by whisper writer
 async def transcriptions(
         file: UploadFile,
         model: str = Form(...),
@@ -82,10 +89,11 @@ async def transcriptions(
     ):
     global pipe
 
-    kwargs = {'generate_kwargs': {'task': 'transcribe'}}
+    kwargs = {'generate_kwargs': {}}
 
     if language:
         kwargs['generate_kwargs']["language"] = language
+        kwargs['generate_kwargs']["task"] = 'transcribe' # hf do not like having task on non multi language model
 # May work soon, https://github.com/huggingface/transformers/issues/27317
 #    if prompt:
 #        kwargs["initial_prompt"] = prompt
@@ -143,22 +151,44 @@ def parse_args(argv=None):
 if __name__ == "__main__":
     args = parse_args(sys.argv[1:])
 
-    if args.device == "auto":
-        device = "cuda" if torch.cuda.is_available() else "cpu"
+    core = ov.Core()
+    devices=str(core.available_devices)
 
-    if args.dtype == "auto":
-        if torch.cuda.is_available():
-            dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
-        else:
-            dtype = torch.float32
+    if args.device not in devices:
+        print(f"Openvino device {args.device} not available. Avaiable devices: {devices}")
+        exit(1)
+
+    # use openvino models
+    model = WhisperForConditionalGeneration.from_pretrained(args.model)
+    processor = WhisperProcessor.from_pretrained(args.model)
+    generation_config = GenerationConfig.from_pretrained(args.model)
+
+    model_path = Path(args.model.replace('/', '_'))
+    ov_config = {"CACHE_DIR": ""}
+    if not model_path.exists():
+        ov_model = OVModelForSpeechSeq2Seq.from_pretrained(
+            args.model, ov_config=ov_config, export=True, compile=False, load_in_8bit=False
+        )
+        ov_model.half()
+        ov_model.save_pretrained(model_path)
     else:
-        dtype = torch.bfloat16 if args.dtype == "bfloat16" else torch.float16 if args.dtype == "float16" else torch.float32
+        ov_model = OVModelForSpeechSeq2Seq.from_pretrained(
+            model_path, ov_config=ov_config, compile=False
+        )
 
-        if dtype == torch.bfloat16 and not torch.cuda.is_bf16_supported():
-            print("bfloat16 not supported on this hardware, falling back to float16", file=sys.stderr)
-            dtype = torch.float16
+    ov_model.generation_config = generation_config
+    ov_model.to(args.device)
+    ov_model.compile()
 
-    pipe = pipeline("automatic-speech-recognition", model=args.model, device=device, chunk_length_s=30, torch_dtype=dtype)
+    # Configure pipeline
+    pipe = pipeline(
+        "automatic-speech-recognition",
+        model=ov_model,
+        tokenizer=processor.tokenizer,
+        feature_extractor=processor.feature_extractor,
+        chunk_length_s=30
+    )
+
     if args.preload:
         sys.exit(0)
 

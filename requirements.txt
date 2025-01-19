@@ -4,3 +4,5 @@ pydantic
 python-multipart
 transformers
 torch
+openvino
+optimum-intel
