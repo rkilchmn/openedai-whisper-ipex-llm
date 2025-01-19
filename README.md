@@ -6,7 +6,7 @@ An OpenAI API compatible speech to text server for audio transcription and trans
 - Compatible with the OpenAI audio/transcriptions and audio/translations API
 - Does not connect to the OpenAI API and does not require an OpenAI API Key
 - Not affiliated with OpenAI in any way
-- using IPEX-LLM framework supporting Intel GPUs (tested with intel 12th gen GPU on WIndows 11)
+- using IPEX-LLM framework supporting Intel GPUs (tested with intel 12th gen GPU on Windows 11)
 
 API Compatibility:
 
@@ -126,7 +126,7 @@ print(transcription.text)
 Docker support
 --------------
 
-NOT implemented yet for OpenVino
+NOT implemented yet for IPEX-LLM
 
 You can run the server via docker like so:
 
