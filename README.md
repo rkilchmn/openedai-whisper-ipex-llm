@@ -6,7 +6,7 @@ An OpenAI API compatible speech to text server for audio transcription and trans
 - Compatible with the OpenAI audio/transcriptions and audio/translations API
 - Does not connect to the OpenAI API and does not require an OpenAI API Key
 - Not affiliated with OpenAI in any way
-- using OpenVino framework supporting CPU and GPU (tested with intel 12th gen GPU on WSL2)
+- using IPEX-LLM framework supporting Intel GPUs (tested with intel 12th gen GPU on WIndows 11)
 
 API Compatibility:
 
@@ -89,8 +89,8 @@ Options:
                       The model to use for transcription.
                       Ex. distil-whisper/distil-medium.en (default: openai/whisper-large-v2)
 -d DEVICE, --device DEVICE
-                      Set the OpenVino device for the model. Ex. CPU or GPU (default: AUTO)
--t DTYPE, --dtype DTYPE - NOT implemented yet for OpenVino (will be ignored))
+                      Set the device for the model. Ex. 'xpu' for GPU or 'cpu' (default: 'xpu')
+-t DTYPE, --dtype DTYPE - NOT implemented yet for OpenVino (will be ignored)
                       Set the torch data type for processing (float32, float16, bfloat16) (default: auto)
 -P PORT, --port PORT  Server tcp port (default: 8000)
 -H HOST, --host HOST  Host to listen on, Ex. 0.0.0.0 (default: localhost)
