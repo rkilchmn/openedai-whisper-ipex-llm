@@ -86,8 +86,7 @@ OpenedAI Whisper API Server
 Options:
 -h, --help            Show this help message and exit.
 -m MODEL, --model MODEL
-                     The model to use for transcription.
-                     Ex. distil-whisper/distil-large-v3 (default 'distil-whisper/distil-small.en')
+                     The model to use for transcription (default 'distil-whisper/distil-large-v3')
 -d DEVICE, --device DEVICE
                       Set the device for the model. Ex. 'xpu' for GPU or 'cpu' (default: 'xpu')
 -t DTYPE, --dtype DTYPE - NOT implemented yet for OpenVino (will be ignored)

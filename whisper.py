@@ -3,6 +3,10 @@ import os
 import sys
 import argparse
 
+# only to show version
+import torch
+import intel_extension_for_pytorch as ipex
+
 from transformers import pipeline
 from typing import Optional, List
 from fastapi import UploadFile, Form
@@ -143,7 +147,7 @@ def parse_args(argv=None):
         description='OpenedAI Whisper API Server',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('-m', '--model', action='store', default="distil-whisper/distil-small.en", help="Ex. distil-whisper/distil-large-v3 (default 'distil-whisper/distil-small.en'")
+    parser.add_argument('-m', '--model', action='store', default="The model to use for transcription (default 'distil-whisper/distil-large-v3')")
     parser.add_argument('-d', '--device', action='store', default="xpu", help="Set the device for the model. Ex. 'xpu' for GPU or 'cpu' (default: 'xpu')")
     parser.add_argument('-t', '--dtype', action='store', default="auto", help="Set the torch data type for processing (float32, float16, bfloat16)")
     parser.add_argument('-q', '--quantization', action='store', default="", help=f"Enable model qunatization Ex. {QUANTIZATION_4BIT} or  {QUANTIZATION_8BIT} (default is off)")
@@ -154,6 +158,10 @@ def parse_args(argv=None):
     return parser.parse_args()
 
 if __name__ == "__main__":
+    # show versions used
+    print(f'PyTorch Version: {torch.__version__}')
+    print(f'Intel PyTorch Extension Version: {ipex.__version__}')
+
     args = parse_args(sys.argv[1:])
 
     # enable qantization
@@ -169,7 +177,8 @@ if __name__ == "__main__":
     model.config.forced_decoder_ids = None
 
     # With only one line to enable IPEX-LLM optimize on a pytorch model
-    model = optimize_model(model)
+    if args.quantization:
+        model = optimize_model(model)
     model = model.to(args.device)
 
     # Configure pipeline
@@ -177,7 +186,7 @@ if __name__ == "__main__":
       "automatic-speech-recognition",
       model=model,
       feature_extractor= WhisperFeatureExtractor.from_pretrained(args.model),
-      tokenizer= WhisperTokenizer.from_pretrained(args.model),
+      tokenizer= WhisperTokenizer.from_pretrained(args.model, language="language="),
       chunk_length_s=30,
       device=args.device
     )
