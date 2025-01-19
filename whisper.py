@@ -18,6 +18,9 @@ from pathlib import Path
 
 import openedai
 
+QUANTIZATION_8BIT = '8-bit'
+QUANTIZATION_4BIT = '4-bit'
+
 pipe = None
 app = openedai.OpenAIStub()
 
@@ -142,6 +145,7 @@ def parse_args(argv=None):
     parser.add_argument('-m', '--model', action='store', default="distil-whisper/distil-small.en", help="The model to use for transcription. Ex. distil-whisper/distil-medium.en")
     parser.add_argument('-d', '--device', action='store', default="AUTO", help="Set the OpenVino device for the model. Ex. CPU or GPU (default: AUTO)")
     parser.add_argument('-t', '--dtype', action='store', default="auto", help="Set the torch data type for processing (float32, float16, bfloat16)")
+    parser.add_argument('-q', '--quantization', action='store', default="", help=f"Enable model qunatization Ex. {QUANTIZATION_4BIT} or  {QUANTIZATION_8BIT} (default is off)")
     parser.add_argument('-P', '--port', action='store', default=8000, type=int, help="Server tcp port")
     parser.add_argument('-H', '--host', action='store', default='localhost', help="Host to listen on, Ex. 0.0.0.0")
     parser.add_argument('--preload', action='store_true', help="Preload model and exit.")
@@ -158,16 +162,28 @@ if __name__ == "__main__":
         print(f"Openvino device {args.device} not available. Avaiable devices: {devices}")
         exit(1)
 
+    # enable qantization
+    is_8bit = False
+    is_4bit = False
+    if args.quantization == QUANTIZATION_4BIT:
+        is_4bit = True
+    elif args.quantization == QUANTIZATION_8BIT:
+        is_8bit = True
+
     # use openvino models
     model = WhisperForConditionalGeneration.from_pretrained(args.model)
     processor = WhisperProcessor.from_pretrained(args.model)
     generation_config = GenerationConfig.from_pretrained(args.model)
 
-    model_path = Path(args.model.replace('/', '_'))
+    model_path_str = args.model.replace('/', '_')
+    if args.quantization:
+        model_path_str += '_' + args.quantization
+    model_path = Path(model_path_str)
+    
     ov_config = {"CACHE_DIR": ""}
     if not model_path.exists():
         ov_model = OVModelForSpeechSeq2Seq.from_pretrained(
-            args.model, ov_config=ov_config, export=True, compile=False, load_in_8bit=False
+            args.model, ov_config=ov_config, export=True, compile=False, load_in_8bit=is_8bit, load_in_4bit=is_4bit
         )
         ov_model.half()
         ov_model.save_pretrained(model_path)

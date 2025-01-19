@@ -14,7 +14,7 @@
 				"request": "launch",
 				"program": "whisper.py",
 				"console": "integratedTerminal",
-				"args": ["-m","distil-whisper/distil-small.en","-d","GPU", "-P", "8080"]
+				"args": ["-m","distil-whisper/distil-small.en","-d","GPU", "-q", "8-bit","-P", "8080"]
 			},
 		]
 	}

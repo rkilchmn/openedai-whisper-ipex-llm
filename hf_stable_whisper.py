@@ -72,9 +72,16 @@ print(f"inference time is {time.time()-start}")
 # print(result["text"])
 
 # mesurements with on intel-core-i5-1135g7 16GB WSL2 Ubuntu 22 
-# "distil-whisper/distil-small.en" for 10 min sample
+# "distil-whisper/distil-small.en" for 10 min sample (WSL2)
 # this program CPU: inference time is 637.0 s
 # this program GPU: inference time is 163.4/199/188 s memory 7 GB / CPU 12% / GPU 99% 3.2 GB shared GPU memory 
+# 8-bit quant 130.7 sI'm 
 # "openai/whisper-small" 10 min sample
 # whisper.cpp with openvino GPU inference time is 178.0/214/194 s memory 2.2 GB / CPU 23% / GPU 10% (spikes only) 1.1 shared GPU memory
 # this program GPU inference time is 431.0/520s memory 8.6 GB / CPU 8% GPU 99% 5GB shared GPU memory   
+# "distil-whisper/distil-small.en" for 10 min sample (Windows 11)
+# this program GPU: inference time is 200 s memory 7 GB / CPU 40%  base with spikes/ GPU 24% base with spikes 1.9 GB shared GPU memory 
+# "distil-whisper/distil-large-v3" for 10 min sample (Windows 11)
+# this program GPU: inference time is 347.4 s process 4.2 GB  / CPU 10%  base with small spikes/ GPU 80+ spikes% base with spikes 3.3 GB shared GPU memory 
+# 8-bit quant 273 s
+

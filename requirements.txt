@@ -6,3 +6,4 @@ transformers
 torch
 openvino
 optimum-intel
+nncf # for 4bit and 8bit quantization
