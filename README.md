@@ -55,7 +55,7 @@ API Documentation
 Installation instructions
 -------------------------
 
-Openvino runtime is installed automatically by pip. Further information can be found here: [ install OpenVino](https://docs.openvino.ai/2024/get-started/install-openvino.html)
+Openvino runtime (for Python API only) is installed automatically by pip. Further information can be found here: [ install OpenVino](https://docs.openvino.ai/2024/get-started/install-openvino.html)
 
 ```shell
 # Install the Python requirements
