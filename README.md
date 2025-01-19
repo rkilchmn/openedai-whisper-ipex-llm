@@ -35,10 +35,9 @@ Details:
 
 Tested whisper models:
 
-* openai/whisper-large-v2 
-* openai/whisper-large-v3
-* distil-whisper/distil-small.en (the default)
-* openai/whisper-tiny.en
+* openai/whisper-large-v3 also with 4-bit quantization (the default)
+* NOT WORKING: distil-whisper/distil-small.en - does not generate output or just last couple of words
+* NOT WORKING: distil-whisper/distil-medium.en - no proper translation, gets stuck repeating certain words
 * ...
 
 Version: 0.1.0, Last update: 2024-03-15
