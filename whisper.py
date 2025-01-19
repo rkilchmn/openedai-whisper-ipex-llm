@@ -3,10 +3,6 @@ import os
 import sys
 import argparse
 
-# only to show version
-import torch
-import intel_extension_for_pytorch as ipex
-
 from transformers import pipeline
 from typing import Optional, List
 from fastapi import UploadFile, Form
@@ -159,8 +155,8 @@ def parse_args(argv=None):
 
 if __name__ == "__main__":
     # show versions used
-    print(f'PyTorch Version: {torch.__version__}')
-    print(f'Intel PyTorch Extension Version: {ipex.__version__}')
+    print("torch version:", sys.modules['torch'].__version__)
+    print("intel_extension_for_pytorch version:", sys.modules['torch'].__version__)
 
     args = parse_args(sys.argv[1:])
 
