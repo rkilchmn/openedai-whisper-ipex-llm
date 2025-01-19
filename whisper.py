@@ -143,8 +143,7 @@ def parse_args(argv=None):
         description='OpenedAI Whisper API Server',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('-m', '--model', action='store', default="distil-whisper/distil-small.en", help="The model to use for transcription. Ex. distil-whisper/distil-medium.en")
-    parser.add_argument('-d', '--device', action='store', default="xpu", help="Set the device for the model. Ex. 'xpu' for GPU or 'cpu' (default: 'xpu')")
+    parser.add_argument('-m', '--model', action='store', default="distil-whisper/distil-small.en", help="The model to use for transcription. Ex. distil-whisper/distil-large-v3 (default 'distil-whisper/distil-small.en')")
     parser.add_argument('-t', '--dtype', action='store', default="auto", help="Set the torch data type for processing (float32, float16, bfloat16)")
     parser.add_argument('-q', '--quantization', action='store', default="", help=f"Enable model qunatization Ex. {QUANTIZATION_4BIT} or  {QUANTIZATION_8BIT} (default is off)")
     parser.add_argument('-P', '--port', action='store', default=8000, type=int, help="Server tcp port")

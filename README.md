@@ -35,9 +35,9 @@ Details:
 
 Tested whisper models:
 
-* openai/whisper-large-v2 (the default)
+* openai/whisper-large-v2 
 * openai/whisper-large-v3
-* distil-whisper/distil-medium.en
+* distil-whisper/distil-small.en (the default)
 * openai/whisper-tiny.en
 * ...
 
@@ -86,8 +86,8 @@ OpenedAI Whisper API Server
 Options:
 -h, --help            Show this help message and exit.
 -m MODEL, --model MODEL
-                      The model to use for transcription.
-                      Ex. distil-whisper/distil-medium.en (default: openai/whisper-large-v2)
+                     The model to use for transcription.
+                     Ex. distil-whisper/distil-large-v3 (default 'distil-whisper/distil-small.en')
 -d DEVICE, --device DEVICE
                       Set the device for the model. Ex. 'xpu' for GPU or 'cpu' (default: 'xpu')
 -t DTYPE, --dtype DTYPE - NOT implemented yet for OpenVino (will be ignored)
