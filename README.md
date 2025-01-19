@@ -1,23 +1,27 @@
-OpenedAI Whisper
-----------------
+OpenedAI Whisper Openvino
+-------------------------
 
 An OpenAI API compatible speech to text server for audio transcription and translations, aka. Whisper.
 
 - Compatible with the OpenAI audio/transcriptions and audio/translations API
 - Does not connect to the OpenAI API and does not require an OpenAI API Key
 - Not affiliated with OpenAI in any way
+- using OpenVino framework supporting CPU and GPU (tested with intel 12th gen GPU on WSL2)
 
 API Compatibility:
+
 - [X] /v1/audio/transcriptions
 - [X] /v1/audio/translations
 
 Parameter Support:
+
 - [X] `file`
 - [X] `model` (only whisper-1 exists, so this is ignored)
 - [X] `language`
 - [ ] `prompt` (not yet supported)
 - [X] `temperature`
 - [X] `response_format`:
+
 - - [X] `json`
 - - [X] `text`
 - - [X] `srt`
@@ -25,19 +29,19 @@ Parameter Support:
 - - [X] `verbose_json` *(partial support, some fields missing)
 
 Details:
+
 * CUDA or CPU support (automatically detected)
 * float32, float16 or bfloat16 support (automatically detected)
 
 Tested whisper models:
+
 * openai/whisper-large-v2 (the default)
 * openai/whisper-large-v3
 * distil-whisper/distil-medium.en
 * openai/whisper-tiny.en
 * ...
 
-
 Version: 0.1.0, Last update: 2024-03-15
-
 
 API Documentation
 -----------------
@@ -47,7 +51,6 @@ API Documentation
 * [OpenAI Speech to text guide](https://platform.openai.com/docs/guides/speech-to-text)
 * [OpenAI API Transcription Reference](https://platform.openai.com/docs/api-reference/audio/createTranscription)
 * [OpenAI API Translation Reference](https://platform.openai.com/docs/api-reference/audio/createTranslation)
-
 
 Installation instructions
 -------------------------
@@ -77,8 +80,8 @@ Options:
                       The model to use for transcription.
                       Ex. distil-whisper/distil-medium.en (default: openai/whisper-large-v2)
 -d DEVICE, --device DEVICE
-                      Set the torch device for the model. Ex. cuda:1 (default: auto)
--t DTYPE, --dtype DTYPE
+                      Set the OpenVino device for the model. Ex. CPU or GPU (default: AUTO)
+-t DTYPE, --dtype DTYPE - NOT implemented yet for OpenVino (will be ignored))
                       Set the torch data type for processing (float32, float16, bfloat16) (default: auto)
 -P PORT, --port PORT  Server tcp port (default: 8000)
 -H HOST, --host HOST  Host to listen on, Ex. 0.0.0.0 (default: localhost)
@@ -114,7 +117,10 @@ print(transcription.text)
 Docker support
 --------------
 
+NOT implemented yet for OpenVino
+
 You can run the server via docker like so:
+
 ```shell
 docker compose build
 docker compose up
