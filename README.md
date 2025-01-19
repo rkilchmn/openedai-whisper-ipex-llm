@@ -55,7 +55,7 @@ API Documentation
 Installation instructions
 -------------------------
 
-You will need to[ install OpenVino](https://docs.openvino.ai/2024/get-started/install-openvino.html) for your operating system if you want to use this repo.
+Openvino runtime is installed automatically by pip. Further information can be found here: [ install OpenVino](https://docs.openvino.ai/2024/get-started/install-openvino.html)
 
 ```shell
 # Install the Python requirements
