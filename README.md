@@ -55,7 +55,7 @@ API Documentation
 Installation instructions
 -------------------------
 
-You will need to install CUDA for your operating system if you want to use CUDA.
+You will need to[ install OpenVino](https://docs.openvino.ai/2024/get-started/install-openvino.html) for your operating system if you want to use this repo.
 
 ```shell
 # Install the Python requirements
