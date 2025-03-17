@@ -36,6 +36,7 @@ Details:
 Tested whisper models:
 
 * openai/whisper-large-v3 also with 4-bit quantization (the default)
+* distil-whisper/distil-large-v3 also with 4-bit quantization
 * openai/whisper-large-v3-turbo (491s for 600s audio on Intel iGPU Gen11 Iris Xe)
 * openai/whisper-large-v3-turbo with 4-bit quantization (415s for 600s audio on Intel iGPU Gen11 Iris Xe)
 * NOT WORKING: distil-whisper/distil-small.en - does not generate output or just last couple of words

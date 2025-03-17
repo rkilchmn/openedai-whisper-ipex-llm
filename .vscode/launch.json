@@ -11,7 +11,7 @@
             "program": "whisper.py",
             "console": "integratedTerminal",
             "args": [
-                "-m", "openai/whisper-large-v3-turbo",
+                "-m", "distil-whisper/distil-large-v3",
                 "-q", "4-bit",
                 "-d", "xpu",
                 "-P", "8081"
