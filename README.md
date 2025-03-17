@@ -36,6 +36,8 @@ Details:
 Tested whisper models:
 
 * openai/whisper-large-v3 also with 4-bit quantization (the default)
+* openai/whisper-large-v3-turbo (491s for 600s audio on Intel iGPU Gen11 Iris Xe)
+* openai/whisper-large-v3-turbo with 4-bit quantization (415s for 600s audio on Intel iGPU Gen11 Iris Xe)
 * NOT WORKING: distil-whisper/distil-small.en - does not generate output or just last couple of words
 * NOT WORKING: distil-whisper/distil-medium.en - no proper translation, gets stuck repeating certain words
 * ...
@@ -64,12 +66,16 @@ or in VS Code creata conda environment and add:
 conda install libuv
 ```
 
-
 ```shell
 # Install the Python requirements
 pip install -r requirements.txt
 # install ffmpeg
 sudo apt install ffmpeg
+```
+
+For upgrade:
+```shell
+pip install --pre --upgrade ipex-llm[xpu] torch intel-extension-for-pytorch --extra-index-url https://pytorch-extension.intel.com/release-whl/stable/xpu/us/
 ```
 
 Usage
@@ -108,6 +114,11 @@ Or just like this:
 
 ```shell
 curl -s http://localhost:8000/v1/audio/transcriptions -F model="whisper-1" -F file="@audio.mp3"
+```
+
+or with elepsed time for call```shell
+curl -s http://localhost:8081/v1/audio/transcriptions -H "Content-Type: multipart/form-data" -F mo
+del="whisper-1" -w %{time_total} -F file="@sample-10min.wav" -F response_format=text
 ```
 
 Or like this example from the [OpenAI Speech to text guide Quickstart](https://platform.openai.com/docs/guides/speech-to-text/quickstart):
